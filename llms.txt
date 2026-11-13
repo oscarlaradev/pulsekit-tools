@@ -1,13 +1,30 @@
-# PulseKit Tools // Free 100% Private Browser Utility & Hardware Lab
+# PulseKit — 18 Free In-Browser Hardware & Web Tools (100% Client-Side, Zero Uploads)
 
-> PulseKit is an all-in-one, zero-upload browser utility suite built for English (US/Global) and Spanish (Mexico/Latam) users. Every tool runs 100% locally in the browser using HTML5 Canvas, Gamepad API, Web Audio API, and Web Crypto API.
+> PulseKit is a zero-upload, privacy-first browser utility and hardware diagnostics lab. Every tool executes locally inside the user's device memory using HTML5 Canvas, PDF-Lib, Tesseract WASM, Web Audio API, Web Gamepad API, and Web Crypto API.
 
-## Direct Tool Endpoints
-- [PulseKit Main Hub](https://pulsekit-tools.vercel.app/): All 6 browser utilities in one fast workspace.
-- [Image Compressor & WebP Converter](https://pulsekit-tools.vercel.app/image-compressor-webp-converter): Shrink PNG/JPG/WebP images locally with quality & width controls.
-- [PS5 / PS4 / Xbox Controller Drift Tester](https://pulsekit-tools.vercel.app/controller-drift-tester-ps5-xbox): Real-time 60Hz stick drift radar, L2/R2 trigger meter, 16-button grid, and vibration tester.
-- [Mouse Polling Rate (Hz), CPS & Reaction Time Test](https://pulsekit-tools.vercel.app/mouse-polling-rate-cps-reaction-test): Measure USB mouse Hz (125Hz–1000Hz+), 5-second click speed, and human reflex in milliseconds.
-- [Microphone Visualizer & Dead Pixel Screen Test](https://pulsekit-tools.vercel.app/mic-dead-pixel-screen-test): Live mic frequency analyzer and fullscreen solid-color dead pixel display check.
-- [Instant QR Code & Wi-Fi QR Generator](https://pulsekit-tools.vercel.app/qr-code-wifi-generator): Generate downloadable PNG QR codes for URLs, text, or guest Wi-Fi access.
-- [Herramientas Web Gratis en Español](https://pulsekit-tools.vercel.app/herramientas-web-gratis-espanol): Versión completa en español para México y Latinoamérica.
+## Main Site
+- https://pulsekit-tools.vercel.app/ (English & Spanish toggle)
+- https://pulsekit-tools.vercel.app/herramientas-web-gratis-espanol (Dedicated Spanish / Mexico / Latam landing page)
 
+## 18 Dedicated Tool Endpoints
+1. Image Compressor & WebP Converter: https://pulsekit-tools.vercel.app/image-compressor-webp-converter
+2. PS5 DualSense, PS4 & Xbox Stick Drift Tester: https://pulsekit-tools.vercel.app/controller-drift-tester-ps5-xbox
+3. Mouse Polling Rate (Hz), CPS & Reaction Time Test: https://pulsekit-tools.vercel.app/mouse-polling-rate-cps-reaction-test
+4. Online Microphone Visualizer & Dead Pixel Screen Test: https://pulsekit-tools.vercel.app/mic-dead-pixel-screen-test
+5. Headphone & Speaker Stereo L/R + Sub-Bass Tester: https://pulsekit-tools.vercel.app/speaker-headphone-bass-tester
+6. Image Color Palette Extractor (HEX) & WCAG Contrast: https://pulsekit-tools.vercel.app/color-palette-extractor-contrast
+7. Instant QR Code & Wi-Fi Share Generator: https://pulsekit-tools.vercel.app/qr-code-wifi-generator
+8. Keyboard Ghosting, NKRO & Switch Chatter Tester: https://pulsekit-tools.vercel.app/keyboard-ghosting-nkro-chatter-test
+9. PDF Merger & Image-to-PDF Studio: https://pulsekit-tools.vercel.app/merge-pdf-image-to-pdf-free
+10. Photo EXIF Metadata Viewer & GPS Privacy Stripper: https://pulsekit-tools.vercel.app/remove-exif-gps-data-from-photos
+11. Monitor Refresh Rate (Hz) & Frame-Skip Motion Test: https://pulsekit-tools.vercel.app/monitor-refresh-rate-hz-fps-test
+12. Image-to-Text OCR Extractor (English & Spanish): https://pulsekit-tools.vercel.app/image-to-text-ocr-online-free
+13. JSON Formatter, Validator & Base64 Encoder/Decoder: https://pulsekit-tools.vercel.app/json-formatter-base64-decoder-online
+14. Text & Code Diff Checker: https://pulsekit-tools.vercel.app/text-code-diff-checker-online
+15. SHA-256 / SHA-512 / SHA-1 File & Text Checksum: https://pulsekit-tools.vercel.app/sha256-file-checksum-hash-generator
+16. Mbps to MB/s Download Time, PX/REM & 16:9 Calculator: https://pulsekit-tools.vercel.app/internet-speed-aspect-ratio-calculator
+17. Pomodoro Focus Timer & Brown/Pink/White Noise: https://pulsekit-tools.vercel.app/pomodoro-timer-brown-noise-online
+
+## Privacy & Architecture
+- Zero server uploads: 0 bytes of user files, audio, or credentials leave the browser.
+- Free forever, no account required, mobile and desktop responsive.

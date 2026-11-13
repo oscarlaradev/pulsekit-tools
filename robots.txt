@@ -10,9 +10,6 @@ Allow: /
 User-agent: OAI-SearchBot
 Allow: /
 
-User-agent: GPTBot
-Allow: /
-
 User-agent: ChatGPT-User
 Allow: /
 
@@ -22,9 +19,10 @@ Allow: /
 User-agent: ClaudeBot
 Allow: /
 
-User-agent: Google-Extended
+User-agent: Applebot
+Allow: /
+
+User-agent: GPTBot
 Allow: /
 
 Sitemap: https://pulsekit-tools.vercel.app/sitemap.xml
-# AI Discovery: https://pulsekit-tools.vercel.app/llms.txt
-
