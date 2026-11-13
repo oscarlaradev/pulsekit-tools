@@ -82,6 +82,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body data-tool="palette" class="min-h-screen flex flex-col selection:bg-[#b8ff2c] selection:text-[#05070b]">
@@ -152,6 +153,12 @@
             <option value="pdf">PDF Merger &amp; Image-to-PDF Studio</option>
             <option value="exif">Photo EXIF Viewer &amp; GPS Privacy Stripper</option>
             <option value="fps">Monitor Refresh Rate (Hz) &amp; Motion Test</option>
+            <option value="ocr">Image-to-Text OCR Extractor (EN / ES)</option>
+            <option value="json">JSON Formatter &amp; Base64 Encoder/Decoder</option>
+            <option value="diff">Text &amp; Code Diff Checker</option>
+            <option value="hash">SHA-256 / SHA-512 File &amp; Text Hasher</option>
+            <option value="unit">Data Speed, PX/REM &amp; Aspect Ratio Calc</option>
+            <option value="timer">Pomodoro Focus Timer &amp; Brown Noise</option>
           </select>
           <i class="fa-solid fa-chevron-down pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-[10px]"></i>
         </div>
@@ -175,7 +182,7 @@
     <section class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
       <div>
         <h1 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight" data-i18n="heroTitle">
-          12 Precision Browser Tools. <span class="text-[#b8ff2c]">Zero Uploads.</span>
+          18 Precision Browser Tools. <span class="text-[#b8ff2c]">Zero Uploads.</span>
         </h1>
         <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl" data-i18n="heroSub">
           Engineered for instant speed and total privacy. Everything executes inside your device memory—no accounts, no server queues.
@@ -259,6 +266,42 @@
         <i class="dock-icon fa-solid fa-gauge-high text-slate-300 text-sm mb-1.5 block"></i>
         <div class="font-bold text-xs text-white truncate" data-i18n="tabFps">Monitor Hz</div>
         <div class="text-[10px] text-slate-400 truncate">FPS &amp; Motion</div>
+      </button>
+
+      <button onclick="switchTool('ocr')" id="btn-tool-ocr" class="dock-btn p-3 rounded-xl text-left">
+        <i class="dock-icon fa-solid fa-file-lines text-slate-300 text-sm mb-1.5 block"></i>
+        <div class="font-bold text-xs text-white truncate" data-i18n="tabOcr">Image OCR</div>
+        <div class="text-[10px] text-slate-400 truncate">Photo to Text</div>
+      </button>
+
+      <button onclick="switchTool('json')" id="btn-tool-json" class="dock-btn p-3 rounded-xl text-left">
+        <i class="dock-icon fa-solid fa-code text-slate-300 text-sm mb-1.5 block"></i>
+        <div class="font-bold text-xs text-white truncate" data-i18n="tabJson">JSON / B64</div>
+        <div class="text-[10px] text-slate-400 truncate">Format &amp; Decode</div>
+      </button>
+
+      <button onclick="switchTool('diff')" id="btn-tool-diff" class="dock-btn p-3 rounded-xl text-left">
+        <i class="dock-icon fa-solid fa-code-compare text-slate-300 text-sm mb-1.5 block"></i>
+        <div class="font-bold text-xs text-white truncate" data-i18n="tabDiff">Text Diff</div>
+        <div class="text-[10px] text-slate-400 truncate">Compare Lines</div>
+      </button>
+
+      <button onclick="switchTool('hash')" id="btn-tool-hash" class="dock-btn p-3 rounded-xl text-left">
+        <i class="dock-icon fa-solid fa-fingerprint text-slate-300 text-sm mb-1.5 block"></i>
+        <div class="font-bold text-xs text-white truncate" data-i18n="tabHash">SHA-256</div>
+        <div class="text-[10px] text-slate-400 truncate">File Checksum</div>
+      </button>
+
+      <button onclick="switchTool('unit')" id="btn-tool-unit" class="dock-btn p-3 rounded-xl text-left">
+        <i class="dock-icon fa-solid fa-calculator text-slate-300 text-sm mb-1.5 block"></i>
+        <div class="font-bold text-xs text-white truncate" data-i18n="tabUnit">Converters</div>
+        <div class="text-[10px] text-slate-400 truncate">Mbps &amp; 16:9</div>
+      </button>
+
+      <button onclick="switchTool('timer')" id="btn-tool-timer" class="dock-btn p-3 rounded-xl text-left">
+        <i class="dock-icon fa-solid fa-stopwatch text-slate-300 text-sm mb-1.5 block"></i>
+        <div class="font-bold text-xs text-white truncate" data-i18n="tabTimer">Focus + Noise</div>
+        <div class="text-[10px] text-slate-400 truncate">Pomodoro</div>
       </button>
     </nav>
 
@@ -848,6 +891,213 @@
 
       <canvas id="fps-motion-canvas" width="900" height="170" class="w-full h-40 rounded-xl bg-[#05070b] border border-white/10"></canvas>
       <p class="text-[11px] text-slate-400 mt-2.5">Top track runs at your monitor's native refresh rate; bottom track is locked to 30 FPS for instant visual motion-blur comparison.</p>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TOOL 13: IMAGE-TO-TEXT OCR EXTRACTOR (TESSERACT.JS)                 -->
+    <!-- =================================================================== -->
+    <section id="pane-ocr" class="tool-pane hidden studio-panel rounded-2xl p-5 sm:p-7 mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-4 mb-5">
+        <div>
+          <h2 class="font-display text-lg font-bold text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-file-lines text-[#b8ff2c]"></i>
+            <span data-i18n="ocrHeading">Image-to-Text OCR Extractor (Local AI)</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5" data-i18n="ocrDesc">Extract editable text from screenshots, documents, or photos locally in your browser using WASM OCR.</p>
+        </div>
+        <select id="ocr-lang" class="bg-[#0b0f17] border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white self-start">
+          <option value="eng">English (ENG)</option>
+          <option value="spa">Español (SPA)</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 space-y-4">
+          <label class="block border-2 border-dashed border-slate-700 hover:border-[#b8ff2c] rounded-xl p-6 text-center cursor-pointer bg-black/40 transition">
+            <i class="fa-solid fa-camera-retro text-3xl text-[#b8ff2c] mb-2"></i>
+            <div class="text-sm font-bold text-white" data-i18n="ocrDrop">Select a screenshot or photo to extract text</div>
+            <div class="text-xs text-slate-400 mt-1">PNG, JPG, WebP</div>
+            <input type="file" accept="image/*" class="hidden" onchange="runImageOcr(this.files[0])">
+          </label>
+          <div id="ocr-status" class="text-xs font-mono-tech text-cyan-300"></div>
+        </div>
+        <div class="lg:col-span-7 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-300">Extracted Text</span>
+            <button onclick="copyElementValue('ocr-output')" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white transition">
+              <i class="fa-regular fa-copy mr-1"></i> Copy
+            </button>
+          </div>
+          <textarea id="ocr-output" rows="8" placeholder="Extracted text will appear here..." class="w-full bg-[#05070b] border border-white/10 rounded-xl p-3 text-xs font-mono-tech text-slate-200 focus:border-[#b8ff2c] outline-none"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TOOL 14: JSON FORMATTER, VALIDATOR & BASE64 STUDIO                  -->
+    <!-- =================================================================== -->
+    <section id="pane-json" class="tool-pane hidden studio-panel rounded-2xl p-5 sm:p-7 mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-4 mb-5">
+        <div>
+          <h2 class="font-display text-lg font-bold text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-code text-cyan-400"></i>
+            <span data-i18n="jsonHeading">JSON Formatter, Validator &amp; Base64 Encoder/Decoder</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5" data-i18n="jsonDesc">Beautify, minify, or validate JSON payloads and encode/decode UTF-8 Base64 strings safely offline.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="formatJsonTool(2)" class="px-3 py-1.5 rounded-lg bg-[#b8ff2c] text-[#05070b] font-bold text-xs">Beautify</button>
+          <button onclick="formatJsonTool(0)" class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white font-bold text-xs">Minify</button>
+          <button onclick="base64Tool('encode')" class="px-3 py-1.5 rounded-lg bg-cyan-400/15 border border-cyan-400/30 text-cyan-300 font-bold text-xs">Base64 Encode</button>
+          <button onclick="base64Tool('decode')" class="px-3 py-1.5 rounded-lg bg-cyan-400/15 border border-cyan-400/30 text-cyan-300 font-bold text-xs">Base64 Decode</button>
+        </div>
+      </div>
+      <textarea id="json-io" rows="9" placeholder='{"hello": "world", "private": true}' class="w-full bg-[#05070b] border border-white/10 rounded-xl p-4 text-xs font-mono-tech text-slate-200 focus:border-[#b8ff2c] outline-none"></textarea>
+      <div id="json-status" class="mt-2 text-xs font-mono-tech text-slate-400"></div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TOOL 15: TEXT & CODE DIFF CHECKER                                   -->
+    <!-- =================================================================== -->
+    <section id="pane-diff" class="tool-pane hidden studio-panel rounded-2xl p-5 sm:p-7 mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-4 mb-5">
+        <div>
+          <h2 class="font-display text-lg font-bold text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-code-compare text-[#ff6b35]"></i>
+            <span data-i18n="diffHeading">Text &amp; Code Diff Checker</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5" data-i18n="diffDesc">Compare two versions of text, configs, or code line-by-line to highlight additions and removals instantly.</p>
+        </div>
+        <button onclick="runTextDiff()" class="px-4 py-2 rounded-xl bg-[#b8ff2c] text-[#05070b] font-extrabold text-xs self-start">Compare Texts</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <textarea id="diff-a" rows="6" placeholder="Original text (A)..." class="w-full bg-[#05070b] border border-white/10 rounded-xl p-3 text-xs font-mono-tech text-slate-200 outline-none focus:border-[#b8ff2c]"></textarea>
+        <textarea id="diff-b" rows="6" placeholder="Modified text (B)..." class="w-full bg-[#05070b] border border-white/10 rounded-xl p-3 text-xs font-mono-tech text-slate-200 outline-none focus:border-cyan-400"></textarea>
+      </div>
+      <div id="diff-result" class="bg-black/50 border border-white/[0.08] rounded-xl p-4 text-xs font-mono-tech space-y-1 max-h-64 overflow-y-auto text-slate-400">
+        Paste text in both boxes and click "Compare Texts".
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TOOL 16: SHA-256 / SHA-512 FILE & TEXT HASH GENERATOR               -->
+    <!-- =================================================================== -->
+    <section id="pane-hash" class="tool-pane hidden studio-panel rounded-2xl p-5 sm:p-7 mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-4 mb-5">
+        <div>
+          <h2 class="font-display text-lg font-bold text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-fingerprint text-[#b8ff2c]"></i>
+            <span data-i18n="hashHeading">SHA-256 / SHA-512 File &amp; Text Checksum Generator</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5" data-i18n="hashDesc">Verify ISO downloads, installers, or strings using the hardware-accelerated Web Crypto API—100% offline.</p>
+        </div>
+        <span class="text-[10px] font-mono-tech text-[#b8ff2c] bg-[#b8ff2c]/10 border border-[#b8ff2c]/25 px-2.5 py-1 rounded-full self-start">WEB CRYPTO</span>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div class="lg:col-span-5 space-y-3">
+          <label class="block border-2 border-dashed border-slate-700 hover:border-[#b8ff2c] rounded-xl p-5 text-center cursor-pointer bg-black/40 transition">
+            <i class="fa-solid fa-shield-halved text-2xl text-[#b8ff2c] mb-1.5"></i>
+            <div class="text-xs font-bold text-white">Drop any file to compute checksums</div>
+            <input type="file" class="hidden" onchange="hashFileLocal(this.files[0])">
+          </label>
+          <input type="text" id="hash-text-input" oninput="hashTextLocal(this.value)" placeholder="Or type text to hash instantly..." class="w-full bg-[#05070b] border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-[#b8ff2c]">
+        </div>
+        <div class="lg:col-span-7 space-y-2.5 font-mono-tech text-xs">
+          <div class="bg-black/40 border border-white/10 rounded-xl p-3">
+            <div class="text-[10px] text-slate-400 mb-1">SHA-256</div>
+            <div id="hash-out-256" class="text-[#b8ff2c] break-all">--</div>
+          </div>
+          <div class="bg-black/40 border border-white/10 rounded-xl p-3">
+            <div class="text-[10px] text-slate-400 mb-1">SHA-512</div>
+            <div id="hash-out-512" class="text-cyan-300 break-all">--</div>
+          </div>
+          <div class="bg-black/40 border border-white/10 rounded-xl p-3">
+            <div class="text-[10px] text-slate-400 mb-1">SHA-1</div>
+            <div id="hash-out-1" class="text-slate-300 break-all">--</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TOOL 17: DATA SPEED, PX/REM & ASPECT RATIO CONVERTER                -->
+    <!-- =================================================================== -->
+    <section id="pane-unit" class="tool-pane hidden studio-panel rounded-2xl p-5 sm:p-7 mb-8">
+      <div class="border-b border-white/[0.08] pb-4 mb-5">
+        <h2 class="font-display text-lg font-bold text-white flex items-center gap-2.5">
+          <i class="fa-solid fa-calculator text-cyan-400"></i>
+          <span data-i18n="unitHeading">Internet Speed, File Size &amp; 16:9 Aspect Ratio Calculator</span>
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5" data-i18n="unitDesc">Convert Mbps to real MB/s download speeds, calculate download times, or scale 16:9 / 4K screen resolutions.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-black/40 border border-white/[0.08] rounded-xl p-5 space-y-3">
+          <h3 class="text-sm font-bold text-white">Download Speed &amp; Time Calculator</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Internet (Mbps)</label>
+              <input type="number" id="unit-mbps" value="300" oninput="calcDownloadSpeed()" class="w-full bg-[#05070b] border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">File Size (GB)</label>
+              <input type="number" id="unit-gb" value="50" oninput="calcDownloadSpeed()" class="w-full bg-[#05070b] border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+            </div>
+          </div>
+          <div id="unit-speed-out" class="bg-[#0b0f17] border border-white/10 rounded-lg p-3 text-xs font-mono-tech text-[#b8ff2c]">
+            Real speed: 37.50 MB/s &bull; Est. time: 22m 45s
+          </div>
+        </div>
+
+        <div class="bg-black/40 border border-white/[0.08] rounded-xl p-5 space-y-3">
+          <h3 class="text-sm font-bold text-white">Aspect Ratio &amp; PX ↔ REM</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Width (px)</label>
+              <input type="number" id="unit-w" value="1920" oninput="calcAspectRatio()" class="w-full bg-[#05070b] border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-400 mb-1">Height (px)</label>
+              <input type="number" id="unit-h" value="1080" oninput="calcAspectRatio()" class="w-full bg-[#05070b] border border-white/10 rounded-lg px-3 py-2 text-xs text-white">
+            </div>
+          </div>
+          <div id="unit-ratio-out" class="bg-[#0b0f17] border border-white/10 rounded-lg p-3 text-xs font-mono-tech text-cyan-300">
+            Ratio: 16:9 &bull; 1920px = 120.00rem (base 16px)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TOOL 18: POMODORO FOCUS TIMER & BROWN/WHITE NOISE GENERATOR         -->
+    <!-- =================================================================== -->
+    <section id="pane-timer" class="tool-pane hidden studio-panel rounded-2xl p-5 sm:p-7 mb-8">
+      <div class="border-b border-white/[0.08] pb-4 mb-5">
+        <h2 class="font-display text-lg font-bold text-white flex items-center gap-2.5">
+          <i class="fa-solid fa-stopwatch text-[#b8ff2c]"></i>
+          <span data-i18n="timerHeading">Pomodoro Focus Timer &amp; Brown/White Noise Lab</span>
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5" data-i18n="timerDesc">Stay locked in with a 25/5 Pomodoro timer and synthesized Brown, Pink, or White noise generated locally via Web Audio API.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-black/40 border border-white/[0.08] rounded-xl p-6 text-center space-y-4">
+          <div id="pomo-display" class="font-mono-tech text-5xl font-extrabold text-[#b8ff2c]">25:00</div>
+          <div class="flex justify-center gap-2">
+            <button onclick="startPomodoro()" class="px-4 py-2 rounded-xl bg-[#b8ff2c] text-[#05070b] font-bold text-xs">Start</button>
+            <button onclick="pausePomodoro()" class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white font-bold text-xs">Pause</button>
+            <button onclick="resetPomodoro(25)" class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-xs">25m</button>
+            <button onclick="resetPomodoro(5)" class="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 text-xs">5m</button>
+          </div>
+        </div>
+        <div class="bg-black/40 border border-white/[0.08] rounded-xl p-6 space-y-4">
+          <h3 class="text-sm font-bold text-white">Focus Ambient Noise Synthesizer</h3>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="toggleFocusNoise('brown')" class="py-2.5 rounded-xl bg-[#0b0f17] border border-white/10 hover:border-[#b8ff2c] text-xs font-bold text-white">Brown Noise</button>
+            <button onclick="toggleFocusNoise('pink')" class="py-2.5 rounded-xl bg-[#0b0f17] border border-white/10 hover:border-cyan-400 text-xs font-bold text-white">Pink Noise</button>
+            <button onclick="toggleFocusNoise('white')" class="py-2.5 rounded-xl bg-[#0b0f17] border border-white/10 hover:border-white text-xs font-bold text-white">White Noise</button>
+          </div>
+          <button onclick="stopFocusNoise()" class="w-full py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300 hover:text-white">Stop Audio</button>
+        </div>
+      </div>
     </section>
 
     <!-- =================================================================== -->

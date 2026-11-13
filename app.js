@@ -7,7 +7,7 @@
 const I18N = {
   en: {
     tagline: "Precision Hardware & Browser Utility Lab",
-    heroTitle: '12 Precision Browser Tools. <span class="text-[#b8ff2c]">Zero Uploads.</span>',
+    heroTitle: '18 Precision Browser Tools. <span class="text-[#b8ff2c]">Zero Uploads.</span>',
     heroSub: "Engineered for instant speed and total privacy. Everything executes inside your device memory—no accounts, no server queues.",
     tabCompress: "Compress",
     tabDrift: "Drift Test",
@@ -21,6 +21,12 @@ const I18N = {
     tabPdf: "PDF Studio",
     tabExif: "EXIF Strip",
     tabFps: "Monitor Hz",
+    tabOcr: "Image OCR",
+    tabJson: "JSON / B64",
+    tabDiff: "Text Diff",
+    tabHash: "SHA-256",
+    tabUnit: "Converters",
+    tabTimer: "Focus + Noise",
     compressHeading: "Image Compressor & WebP Converter",
     compressDesc: "Shrink PNG, JPG, or WebP photos up to 90% locally in your browser without losing quality.",
     dropImg: "Drop an image here or click to select",
@@ -60,7 +66,7 @@ const I18N = {
   },
   es: {
     tagline: "Laboratorio de Hardware y Utilidades en Navegador",
-    heroTitle: '12 Herramientas de Precisión. <span class="text-[#b8ff2c]">Sin Subir Archivos.</span>',
+    heroTitle: '18 Herramientas de Precisión. <span class="text-[#b8ff2c]">Sin Subir Archivos.</span>',
     heroSub: "Todo corre directo en la memoria de tu dispositivo—sin registros, sin esperas y 100% privado.",
     tabCompress: "Comprimir",
     tabDrift: "Test Drift",
@@ -74,6 +80,12 @@ const I18N = {
     tabPdf: "PDF Studio",
     tabExif: "Quitar EXIF",
     tabFps: "Monitor Hz",
+    tabOcr: "Texto OCR",
+    tabJson: "JSON / B64",
+    tabDiff: "Comparar",
+    tabHash: "Hash SHA",
+    tabUnit: "Conversor",
+    tabTimer: "Pomodoro",
     compressHeading: "Compresor de Imágenes y Conversor a WebP",
     compressDesc: "Reduce el peso de tus fotos PNG, JPG o WebP hasta un 90% directo en tu navegador sin perder calidad.",
     dropImg: "Arrastra una imagen aquí o toca para elegir",
@@ -960,7 +972,7 @@ function renderPdfQueue() {
     <div class="flex items-center justify-between gap-2 bg-[#0b0f17] border border-white/10 rounded-lg px-3 py-2">
       <div class="flex items-center gap-2 min-w-0">
         <i class="fa-solid ${f.type === 'application/pdf' ? 'fa-file-pdf text-[#ff6b35]' : 'fa-image text-cyan-400'}"></i>
-        <span class="text-slate-200 truncate">${f.name}</span>
+        <span class="text-slate-200 truncate">${escapeHtml(f.name)}</span>
         <span class="text-[10px] font-mono-tech text-slate-500 shrink-0">${formatBytes(f.size)}</span>
       </div>
       <button onclick="removePdfItem(${i})" class="text-slate-500 hover:text-[#ff6b35] px-1.5" aria-label="Remove file">
@@ -1057,8 +1069,8 @@ async function inspectAndPrepExif(file) {
       if (table) {
         table.innerHTML = rows.map(([k, v]) => `
           <div class="bg-[#0b0f17] border border-white/10 rounded-lg p-2.5">
-            <div class="text-[10px] text-slate-500">${k}</div>
-            <div class="text-slate-200 truncate">${v}</div>
+            <div class="text-[10px] text-slate-500">${escapeHtml(k)}</div>
+            <div class="text-slate-200 truncate">${escapeHtml(v)}</div>
           </div>
         `).join('');
       }
@@ -1166,4 +1178,253 @@ function stopFpsLoop() {
     cancelAnimationFrame(fpsRafId);
     fpsRafId = null;
   }
+}
+
+
+// ============================================================================
+// SECURITY HELPER: STRICT HTML ESCAPING (XSS PREVENTION)
+// ============================================================================
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function copyElementValue(elId) {
+  const el = document.getElementById(elId);
+  if (!el || !navigator.clipboard) return;
+  navigator.clipboard.writeText(el.value ?? el.innerText ?? '');
+}
+
+// ============================================================================
+// 13. IMAGE-TO-TEXT OCR EXTRACTOR (TESSERACT.JS)
+// ============================================================================
+async function runImageOcr(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const status = document.getElementById('ocr-status');
+  const out = document.getElementById('ocr-output');
+  const lang = document.getElementById('ocr-lang')?.value || 'eng';
+  if (typeof Tesseract === 'undefined') {
+    if (status) status.innerText = 'OCR engine still loading, please retry in 2 seconds...';
+    return;
+  }
+  if (status) status.innerText = 'Initializing local WASM OCR...';
+  try {
+    const res = await Tesseract.recognize(file, lang, {
+      logger: (m) => {
+        if (status && m.status) {
+          const pct = m.progress ? ` (${Math.round(m.progress * 100)}%)` : '';
+          status.innerText = `${m.status}${pct}`;
+        }
+      }
+    });
+    if (out) out.value = res.data.text || '';
+    if (status) status.innerText = 'Done! Extracted locally with zero uploads.';
+    bumpRunCounter();
+  } catch (err) {
+    if (status) status.innerText = `OCR error: ${err.message}`;
+  }
+}
+
+// ============================================================================
+// 14. JSON FORMATTER, VALIDATOR & BASE64 STUDIO
+// ============================================================================
+function formatJsonTool(spaces) {
+  const io = document.getElementById('json-io');
+  const status = document.getElementById('json-status');
+  if (!io) return;
+  try {
+    const parsed = JSON.parse(io.value);
+    io.value = JSON.stringify(parsed, null, spaces);
+    if (status) { status.innerText = 'Valid JSON'; status.className = 'mt-2 text-xs font-mono-tech text-[#b8ff2c]'; }
+    bumpRunCounter();
+  } catch (err) {
+    if (status) { status.innerText = `Invalid JSON: ${err.message}`; status.className = 'mt-2 text-xs font-mono-tech text-[#ff6b35]'; }
+  }
+}
+
+function base64Tool(mode) {
+  const io = document.getElementById('json-io');
+  const status = document.getElementById('json-status');
+  if (!io) return;
+  try {
+    if (mode === 'encode') {
+      const bytes = new TextEncoder().encode(io.value);
+      io.value = btoa(String.fromCharCode(...bytes));
+      if (status) { status.innerText = 'Encoded UTF-8 to Base64'; status.className = 'mt-2 text-xs font-mono-tech text-cyan-300'; }
+    } else {
+      const bin = atob(io.value.trim());
+      const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+      io.value = new TextDecoder().decode(bytes);
+      if (status) { status.innerText = 'Decoded Base64 to UTF-8'; status.className = 'mt-2 text-xs font-mono-tech text-cyan-300'; }
+    }
+    bumpRunCounter();
+  } catch (err) {
+    if (status) { status.innerText = `Base64 error: ${err.message}`; status.className = 'mt-2 text-xs font-mono-tech text-[#ff6b35]'; }
+  }
+}
+
+// ============================================================================
+// 15. TEXT & CODE DIFF CHECKER
+// ============================================================================
+function runTextDiff() {
+  const aLines = (document.getElementById('diff-a')?.value || '').split('\n');
+  const bLines = (document.getElementById('diff-b')?.value || '').split('\n');
+  const out = document.getElementById('diff-result');
+  if (!out) return;
+  const max = Math.max(aLines.length, bLines.length);
+  const html = [];
+  for (let i = 0; i < max; i++) {
+    const a = aLines[i];
+    const b = bLines[i];
+    if (a === b) {
+      html.push(`<div class="text-slate-400 px-2">${i + 1}: ${escapeHtml(a ?? '')}</div>`);
+    } else {
+      if (a !== undefined) html.push(`<div class="bg-[#ff6b35]/15 text-[#ff6b35] px-2 rounded">- ${i + 1}: ${escapeHtml(a)}</div>`);
+      if (b !== undefined) html.push(`<div class="bg-[#b8ff2c]/15 text-[#b8ff2c] px-2 rounded">+ ${i + 1}: ${escapeHtml(b)}</div>`);
+    }
+  }
+  out.innerHTML = html.join('') || 'Identical text.';
+  bumpRunCounter();
+}
+
+// ============================================================================
+// 16. SHA-256 / SHA-512 / SHA-1 CHECKSUM GENERATOR (WEB CRYPTO)
+// ============================================================================
+function bufToHex(buf) {
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function computeAllHashes(buffer) {
+  if (!window.crypto?.subtle) return;
+  const [h256, h512, h1] = await Promise.all([
+    crypto.subtle.digest('SHA-256', buffer),
+    crypto.subtle.digest('SHA-512', buffer),
+    crypto.subtle.digest('SHA-1', buffer)
+  ]);
+  const e256 = document.getElementById('hash-out-256');
+  const e512 = document.getElementById('hash-out-512');
+  const e1 = document.getElementById('hash-out-1');
+  if (e256) e256.innerText = bufToHex(h256);
+  if (e512) e512.innerText = bufToHex(h512);
+  if (e1) e1.innerText = bufToHex(h1);
+}
+
+async function hashTextLocal(str) {
+  await computeAllHashes(new TextEncoder().encode(str));
+}
+
+async function hashFileLocal(file) {
+  if (!file) return;
+  await computeAllHashes(await file.arrayBuffer());
+  bumpRunCounter();
+}
+
+// ============================================================================
+// 17. INTERNET SPEED, FILE SIZE & 16:9 ASPECT RATIO CALCULATOR
+// ============================================================================
+function calcDownloadSpeed() {
+  const mbps = parseFloat(document.getElementById('unit-mbps')?.value || 0);
+  const gb = parseFloat(document.getElementById('unit-gb')?.value || 0);
+  const out = document.getElementById('unit-speed-out');
+  if (!out || mbps <= 0) return;
+  const mbs = mbps / 8;
+  const totalSecs = Math.round((gb * 1024) / mbs);
+  const mins = Math.floor(totalSecs / 60);
+  const secs = totalSecs % 60;
+  out.innerText = `Real speed: ${mbs.toFixed(2)} MB/s • Est. time: ${mins}m ${secs}s`;
+}
+
+function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+
+function calcAspectRatio() {
+  const w = parseInt(document.getElementById('unit-w')?.value || 0, 10);
+  const h = parseInt(document.getElementById('unit-h')?.value || 0, 10);
+  const out = document.getElementById('unit-ratio-out');
+  if (!out || w <= 0 || h <= 0) return;
+  const d = gcd(w, h);
+  out.innerText = `Ratio: ${w / d}:${h / d} • ${w}px = ${(w / 16).toFixed(2)}rem (base 16px)`;
+}
+
+// ============================================================================
+// 18. POMODORO FOCUS TIMER & WHITE/PINK/BROWN NOISE SYNTHESIZER
+// ============================================================================
+let pomoSeconds = 25 * 60;
+let pomoTimerId = null;
+let noiseCtx = null;
+let noiseNode = null;
+
+function renderPomodoro() {
+  const el = document.getElementById('pomo-display');
+  if (!el) return;
+  const m = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
+  const s = String(pomoSeconds % 60).padStart(2, '0');
+  el.innerText = `${m}:${s}`;
+}
+
+function startPomodoro() {
+  if (pomoTimerId) return;
+  bumpRunCounter();
+  pomoTimerId = setInterval(() => {
+    if (pomoSeconds > 0) {
+      pomoSeconds--;
+      renderPomodoro();
+    } else {
+      pausePomodoro();
+      if (typeof playTone === 'function') playTone(880, 'sine', 0);
+    }
+  }, 1000);
+}
+
+function pausePomodoro() {
+  if (pomoTimerId) { clearInterval(pomoTimerId); pomoTimerId = null; }
+}
+
+function resetPomodoro(mins) {
+  pausePomodoro();
+  pomoSeconds = mins * 60;
+  renderPomodoro();
+}
+
+function stopFocusNoise() {
+  if (noiseNode) { try { noiseNode.stop(); noiseNode.disconnect(); } catch {} noiseNode = null; }
+}
+
+function toggleFocusNoise(kind) {
+  stopFocusNoise();
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!noiseCtx) noiseCtx = new AudioCtx();
+  if (noiseCtx.state === 'suspended') noiseCtx.resume();
+
+  const bufferSize = noiseCtx.sampleRate * 2;
+  const buffer = noiseCtx.createBuffer(1, bufferSize, noiseCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+
+  let lastOut = 0;
+  let b0 = 0, b1 = 0, b2 = 0;
+  for (let i = 0; i < bufferSize; i++) {
+    const white = Math.random() * 2 - 1;
+    if (kind === 'brown') {
+      lastOut = (lastOut + 0.02 * white) / 1.02;
+      data[i] = lastOut * 3.5;
+    } else if (kind === 'pink') {
+      b0 = 0.99765 * b0 + white * 0.0990460;
+      b1 = 0.96300 * b1 + white * 0.2965164;
+      b2 = 0.57000 * b2 + white * 1.0526913;
+      data[i] = (b0 + b1 + b2 + white * 0.1848) * 0.12;
+    } else {
+      data[i] = white * 0.15;
+    }
+  }
+
+  const src = noiseCtx.createBufferSource();
+  src.buffer = buffer;
+  src.loop = true;
+  src.connect(noiseCtx.destination);
+  src.start();
+  noiseNode = src;
+  bumpRunCounter();
 }
