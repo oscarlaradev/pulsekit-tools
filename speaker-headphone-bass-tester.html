@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
-  <title>Headphone & Speaker Stereo L/R + Sub-Bass Frequency Tester Online // PulseKit</title>
+  <title>Headphone & Speaker Stereo L/R + Sub-Bass Frequency Tester Online | PulseKit</title>
   <meta name="description" content="Test Left and Right stereo speaker balance, play 30Hz-1000Hz sub-bass tones, and generate 165Hz water/dust eject frequencies in your browser.">
   <meta name="keywords" content="left right speaker test, headphone stereo test online, sub bass frequency generator, 165hz water eject sound">
   <meta name="theme-color" content="#b8ff2c">
@@ -20,7 +20,7 @@
   <!-- Open Graph / Social -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="PulseKit Lab">
-  <meta property="og:title" content="Headphone & Speaker Stereo L/R + Sub-Bass Frequency Tester Online // PulseKit">
+  <meta property="og:title" content="Headphone & Speaker Stereo L/R + Sub-Bass Frequency Tester Online | PulseKit">
   <meta property="og:description" content="Test Left and Right stereo speaker balance, play 30Hz-1000Hz sub-bass tones, and generate 165Hz water/dust eject frequencies in your browser.">
   <meta property="og:url" content="https://pulsekit-tools.vercel.app/speaker-headphone-bass-tester">
   <meta property="og:image" content="https://pulsekit-tools.vercel.app/og-banner.png">
@@ -124,33 +124,27 @@
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
       <!-- Brand Identity with Custom Geometric Vector Mark -->
       <a href="/" class="flex items-center gap-3 group shrink-0">
-        <div class="relative w-10 h-10 rounded-xl bg-[#0b0f17] border border-white/15 flex items-center justify-center group-hover:border-[#b8ff2c] transition">
-          <svg class="w-6 h-6 text-[#b8ff2c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="relative w-9 h-9 rounded-lg bg-[#0b0f17] border border-white/15 flex items-center justify-center group-hover:border-[#b8ff2c] transition">
+          <svg class="w-5 h-5 text-[#b8ff2c]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 12h4l3-7 4 14 3-7h4"/>
           </svg>
         </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-white">PULSE<span class="text-[#b8ff2c]">KIT</span></span>
-            <span class="text-[9px] font-mono-tech font-bold px-1.5 py-0.5 rounded bg-cyan-400/10 text-cyan-300 border border-cyan-400/30">STUDIO v2</span>
-          </div>
-          <p class="text-[11px] text-slate-400 hidden lg:block" data-i18n="tagline">Precision Hardware &amp; Browser Utility Lab</p>
-        </div>
+        <span class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-white">PULSE<span class="text-[#b8ff2c]">KIT</span></span>
       </a>
 
       <!-- Center Quick-Jump Command Bar (Desktop & Tablet) -->
       <div class="hidden md:flex items-center flex-1 max-w-md mx-4">
         <div class="relative w-full">
-          <i class="fa-solid fa-terminal absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-          <select id="quick-jump-select" onchange="if(this.value) switchTool(this.value)" aria-label="Quick jump to tool" class="w-full bg-[#0b0f17] border border-white/10 hover:border-white/25 rounded-xl pl-9 pr-4 py-2 text-xs font-mono-tech text-slate-300 focus:border-[#b8ff2c] outline-none cursor-pointer transition">
-            <option value="compress">01 // Image Compressor &amp; WebP Converter</option>
-            <option value="drift">02 // PS5 / PS4 / Xbox Stick Drift Tester</option>
-            <option value="mouse">03 // Mouse Polling Rate (Hz), CPS &amp; Reflex</option>
-            <option value="hardware">04 // Live Mic Visualizer &amp; Dead Pixel Check</option>
-            <option value="audio">05 // Speaker L/R Stereo &amp; Sub-Bass Tester</option>
-            <option value="palette">06 // Image Color Palette &amp; WCAG Contrast</option>
-            <option value="qr">07 // Instant URL &amp; Wi-Fi QR Generator</option>
-            <option value="text">08 // Crypto Password &amp; Word Counter</option>
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+          <select id="quick-jump-select" onchange="if(this.value) switchTool(this.value)" aria-label="Quick jump to tool" class="w-full bg-[#0b0f17] border border-white/10 hover:border-white/25 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-200 focus:border-[#b8ff2c] outline-none cursor-pointer transition">
+            <option value="compress">Image Compressor &amp; WebP Converter</option>
+            <option value="drift">PS5 / PS4 / Xbox Stick Drift Tester</option>
+            <option value="mouse">Mouse Polling Rate (Hz), CPS &amp; Reflex</option>
+            <option value="hardware">Live Mic Visualizer &amp; Dead Pixel Check</option>
+            <option value="audio">Speaker Stereo &amp; Sub-Bass Tester</option>
+            <option value="palette">Image Color Palette &amp; WCAG Contrast</option>
+            <option value="qr">Instant URL &amp; Wi-Fi QR Generator</option>
+            <option value="text">Crypto Password &amp; Word Counter</option>
           </select>
         </div>
       </div>
