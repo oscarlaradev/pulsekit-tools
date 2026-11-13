@@ -80,6 +80,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js" defer></script>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body data-tool="drift" class="min-h-screen flex flex-col selection:bg-[#b8ff2c] selection:text-[#05070b]">
@@ -146,6 +148,10 @@
             <option value="palette">Image Color Palette &amp; WCAG Contrast</option>
             <option value="qr">Instant URL &amp; Wi-Fi QR Generator</option>
             <option value="text">Crypto Password &amp; Word Counter</option>
+            <option value="keyboard">Keyboard Ghosting, NKRO &amp; Chatter Test</option>
+            <option value="pdf">PDF Merger &amp; Image-to-PDF Studio</option>
+            <option value="exif">Photo EXIF Viewer &amp; GPS Privacy Stripper</option>
+            <option value="fps">Monitor Refresh Rate (Hz) &amp; Motion Test</option>
           </select>
           <i class="fa-solid fa-chevron-down pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-[10px]"></i>
         </div>
@@ -169,7 +175,7 @@
     <section class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
       <div>
         <h1 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight" data-i18n="heroTitle">
-          8 Precision Browser Tools. <span class="text-[#b8ff2c]">Zero Uploads.</span>
+          12 Precision Browser Tools. <span class="text-[#b8ff2c]">Zero Uploads.</span>
         </h1>
         <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl" data-i18n="heroSub">
           Engineered for instant speed and total privacy. Everything executes inside your device memory—no accounts, no server queues.
@@ -181,8 +187,8 @@
       </div>
     </section>
 
-    <!-- 8-Tool Ultra-Responsive Studio Dock -->
-    <nav aria-label="PulseKit Utility Dock" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 mb-6">
+    <!-- 12-Tool Ultra-Responsive Studio Dock -->
+    <nav aria-label="PulseKit Utility Dock" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-6">
       <button onclick="switchTool('compress')" id="btn-tool-compress" class="dock-btn dock-btn-active p-3 rounded-xl text-left">
         <i class="dock-icon fa-solid fa-file-zipper text-slate-300 text-sm mb-1.5 block"></i>
         <div class="font-bold text-xs text-white truncate" data-i18n="tabCompress">Compress</div>
@@ -229,6 +235,30 @@
         <i class="dock-icon fa-solid fa-key text-slate-300 text-sm mb-1.5 block"></i>
         <div class="font-bold text-xs text-white truncate" data-i18n="tabText">Security</div>
         <div class="text-[10px] text-slate-400 truncate">Pass &amp; Words</div>
+      </button>
+
+      <button onclick="switchTool('keyboard')" id="btn-tool-keyboard" class="dock-btn p-3 rounded-xl text-left">
+        <i class="dock-icon fa-solid fa-keyboard text-slate-300 text-sm mb-1.5 block"></i>
+        <div class="font-bold text-xs text-white truncate" data-i18n="tabKeyboard">Keyboard</div>
+        <div class="text-[10px] text-slate-400 truncate">NKRO &amp; Chatter</div>
+      </button>
+
+      <button onclick="switchTool('pdf')" id="btn-tool-pdf" class="dock-btn p-3 rounded-xl text-left">
+        <i class="dock-icon fa-solid fa-file-pdf text-slate-300 text-sm mb-1.5 block"></i>
+        <div class="font-bold text-xs text-white truncate" data-i18n="tabPdf">PDF Studio</div>
+        <div class="text-[10px] text-slate-400 truncate">Merge &amp; Img2PDF</div>
+      </button>
+
+      <button onclick="switchTool('exif')" id="btn-tool-exif" class="dock-btn p-3 rounded-xl text-left">
+        <i class="dock-icon fa-solid fa-user-shield text-slate-300 text-sm mb-1.5 block"></i>
+        <div class="font-bold text-xs text-white truncate" data-i18n="tabExif">EXIF Strip</div>
+        <div class="text-[10px] text-slate-400 truncate">Remove GPS</div>
+      </button>
+
+      <button onclick="switchTool('fps')" id="btn-tool-fps" class="dock-btn p-3 rounded-xl text-left">
+        <i class="dock-icon fa-solid fa-gauge-high text-slate-300 text-sm mb-1.5 block"></i>
+        <div class="font-bold text-xs text-white truncate" data-i18n="tabFps">Monitor Hz</div>
+        <div class="text-[10px] text-slate-400 truncate">FPS &amp; Motion</div>
       </button>
     </nav>
 
@@ -654,6 +684,170 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TOOL 9: KEYBOARD GHOSTING, NKRO & CHATTER TESTER                    -->
+    <!-- =================================================================== -->
+    <section id="pane-keyboard" class="tool-pane hidden studio-panel rounded-2xl p-5 sm:p-7 mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-4 mb-5">
+        <div>
+          <h2 class="font-display text-lg font-bold text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-keyboard text-[#b8ff2c]"></i>
+            <span data-i18n="kbHeading">Keyboard Ghosting, NKRO &amp; Switch Chatter Tester</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5" data-i18n="kbDesc">Press any keys simultaneously to test N-Key Rollover (NKRO), detect mechanical switch double-tap chatter (&lt;35ms), and inspect key codes.</p>
+        </div>
+        <button onclick="resetKeyboardTest()" class="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-200 border border-white/10 self-start transition">
+          <i class="fa-solid fa-rotate-left mr-1.5"></i> Reset Keys
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5 font-mono-tech">
+        <div class="bg-black/40 border border-white/[0.08] rounded-xl p-3">
+          <div class="text-[10px] text-slate-400">ACTIVE KEYS</div>
+          <div id="kb-active-count" class="text-xl font-extrabold text-[#b8ff2c]">0</div>
+        </div>
+        <div class="bg-black/40 border border-white/[0.08] rounded-xl p-3">
+          <div class="text-[10px] text-slate-400">MAX NKRO</div>
+          <div id="kb-max-nkro" class="text-xl font-extrabold text-cyan-400">0</div>
+        </div>
+        <div class="bg-black/40 border border-white/[0.08] rounded-xl p-3">
+          <div class="text-[10px] text-slate-400">LAST KEY CODE</div>
+          <div id="kb-last-code" class="text-sm font-bold text-white truncate pt-1">--</div>
+        </div>
+        <div class="bg-black/40 border border-white/[0.08] rounded-xl p-3">
+          <div class="text-[10px] text-slate-400">CHATTER ALERTS</div>
+          <div id="kb-chatter-count" class="text-xl font-extrabold text-slate-300">0</div>
+        </div>
+      </div>
+
+      <div id="kb-visual-grid" class="bg-black/50 border border-white/[0.08] rounded-xl p-3 sm:p-4 overflow-x-auto select-none"></div>
+      <div id="kb-chatter-log" class="mt-3 text-[11px] font-mono-tech text-slate-400">
+        Tap or hold multiple keys on your keyboard to verify rollover &amp; switch health.
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TOOL 10: PDF MERGER & IMAGE-TO-PDF STUDIO                           -->
+    <!-- =================================================================== -->
+    <section id="pane-pdf" class="tool-pane hidden studio-panel rounded-2xl p-5 sm:p-7 mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-4 mb-5">
+        <div>
+          <h2 class="font-display text-lg font-bold text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-file-pdf text-[#ff6b35]"></i>
+            <span data-i18n="pdfHeading">PDF Merger &amp; Image-to-PDF Studio</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5" data-i18n="pdfDesc">Combine multiple PDF files or JPG/PNG images into one PDF document right inside your browser memory—zero uploads.</p>
+        </div>
+        <span class="text-[10px] font-mono-tech text-[#b8ff2c] bg-[#b8ff2c]/10 border border-[#b8ff2c]/25 px-2.5 py-1 rounded-full self-start">LOCAL PDF-LIB</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 space-y-4">
+          <label id="pdf-dropzone" class="block border-2 border-dashed border-slate-700 hover:border-[#b8ff2c] rounded-xl p-6 text-center cursor-pointer bg-black/40 transition">
+            <i class="fa-solid fa-file-circle-plus text-3xl text-[#b8ff2c] mb-2"></i>
+            <div class="text-sm font-bold text-white" data-i18n="pdfDrop">Drop PDFs or Images here, or click to add</div>
+            <div class="text-xs text-slate-400 mt-1">PDF, JPG, PNG (Multi-select supported)</div>
+            <input type="file" id="pdf-file-input" multiple accept="application/pdf,image/jpeg,image/png" class="hidden" onchange="handlePdfFiles(this.files)">
+          </label>
+
+          <div class="flex gap-2">
+            <button onclick="mergeAndDownloadPdf()" id="pdf-merge-btn" disabled class="flex-1 py-3 rounded-xl bg-[#b8ff2c] disabled:bg-slate-800 disabled:text-slate-500 text-[#05070b] font-extrabold text-xs transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-file-arrow-down"></i> Merge &amp; Download PDF
+            </button>
+            <button onclick="clearPdfQueue()" class="px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-slate-300 transition">
+              Clear
+            </button>
+          </div>
+          <div id="pdf-status" class="text-[11px] font-mono-tech text-slate-400"></div>
+        </div>
+
+        <div class="lg:col-span-7 bg-black/40 border border-white/[0.08] rounded-xl p-4 min-h-[220px] flex flex-col">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-300 pb-2 mb-3 border-b border-white/[0.06]">
+            <span>Document Queue</span>
+            <span id="pdf-queue-count" class="font-mono-tech text-cyan-400">0 files</span>
+          </div>
+          <div id="pdf-queue-list" class="space-y-2 flex-1 text-xs text-slate-500">
+            Add PDF documents or JPG/PNG photos to merge them in order.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TOOL 11: PHOTO EXIF VIEWER & GPS PRIVACY STRIPPER                   -->
+    <!-- =================================================================== -->
+    <section id="pane-exif" class="tool-pane hidden studio-panel rounded-2xl p-5 sm:p-7 mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-4 mb-5">
+        <div>
+          <h2 class="font-display text-lg font-bold text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-user-shield text-cyan-400"></i>
+            <span data-i18n="exifHeading">Photo EXIF Metadata Viewer &amp; GPS Privacy Stripper</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5" data-i18n="exifDesc">Inspect hidden camera, timestamp, and GPS coordinates inside your photos—then strip 100% of tracking metadata before posting online.</p>
+        </div>
+        <span class="text-[10px] font-mono-tech text-cyan-300 bg-cyan-400/10 border border-cyan-400/25 px-2.5 py-1 rounded-full self-start">PRIVACY SHIELD</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 space-y-4">
+          <label class="block border-2 border-dashed border-slate-700 hover:border-cyan-400 rounded-xl p-6 text-center cursor-pointer bg-black/40 transition">
+            <i class="fa-solid fa-magnifying-glass-location text-3xl text-cyan-400 mb-2"></i>
+            <div class="text-sm font-bold text-white" data-i18n="exifDrop">Select a photo to inspect &amp; scrub EXIF</div>
+            <div class="text-xs text-slate-400 mt-1">JPG, PNG, WebP, HEIC/TIFF</div>
+            <input type="file" accept="image/*" class="hidden" onchange="inspectAndPrepExif(this.files[0])">
+          </label>
+
+          <button onclick="downloadStrippedPhoto()" id="exif-strip-btn" disabled class="w-full py-3 rounded-xl bg-cyan-400 disabled:bg-slate-800 disabled:text-slate-500 text-[#05070b] font-extrabold text-xs transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-eraser"></i> Strip All Metadata &amp; Download Clean Photo
+          </button>
+        </div>
+
+        <div class="lg:col-span-7 bg-black/40 border border-white/[0.08] rounded-xl p-4">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-white/[0.06]">
+            <span class="text-xs font-bold text-slate-300">Extracted Metadata</span>
+            <span id="exif-gps-badge" class="text-[10px] font-mono-tech px-2 py-0.5 rounded bg-white/5 text-slate-400">WAITING PHOTO</span>
+          </div>
+          <div id="exif-table" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono-tech text-slate-400">
+            <div>Upload a photo to reveal hidden camera model, lens, date, and GPS coordinates.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TOOL 12: MONITOR REFRESH RATE (HZ) & MOTION BLUR TEST               -->
+    <!-- =================================================================== -->
+    <section id="pane-fps" class="tool-pane hidden studio-panel rounded-2xl p-5 sm:p-7 mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-4 mb-5">
+        <div>
+          <h2 class="font-display text-lg font-bold text-white flex items-center gap-2.5">
+            <i class="fa-solid fa-gauge-high text-[#b8ff2c]"></i>
+            <span data-i18n="fpsHeading">Monitor Refresh Rate (Hz) &amp; Frame-Skip Test</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5" data-i18n="fpsDesc">Verify whether your display is actually running at 60Hz, 120Hz, 144Hz, 165Hz, or 240Hz+ and spot frame drops in real time.</p>
+        </div>
+        <span class="text-[10px] font-mono-tech text-[#b8ff2c] bg-[#b8ff2c]/10 border border-[#b8ff2c]/25 px-2.5 py-1 rounded-full self-start">VSYNC TELEMETRY</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5 font-mono-tech">
+        <div class="bg-black/40 border border-white/[0.08] rounded-xl p-4">
+          <div class="text-[10px] text-slate-400">MEASURED REFRESH RATE</div>
+          <div id="fps-hz-val" class="text-3xl font-extrabold text-[#b8ff2c]">-- Hz</div>
+        </div>
+        <div class="bg-black/40 border border-white/[0.08] rounded-xl p-4">
+          <div class="text-[10px] text-slate-400">FRAME INTERVAL</div>
+          <div id="fps-ms-val" class="text-3xl font-extrabold text-cyan-400">-- ms</div>
+        </div>
+        <div class="bg-black/40 border border-white/[0.08] rounded-xl p-4">
+          <div class="text-[10px] text-slate-400">FRAME JITTER / DROPS</div>
+          <div id="fps-drop-val" class="text-3xl font-extrabold text-white">0</div>
+        </div>
+      </div>
+
+      <canvas id="fps-motion-canvas" width="900" height="170" class="w-full h-40 rounded-xl bg-[#05070b] border border-white/10"></canvas>
+      <p class="text-[11px] text-slate-400 mt-2.5">Top track runs at your monitor's native refresh rate; bottom track is locked to 30 FPS for instant visual motion-blur comparison.</p>
     </section>
 
     <!-- =================================================================== -->

@@ -7,7 +7,7 @@
 const I18N = {
   en: {
     tagline: "Precision Hardware & Browser Utility Lab",
-    heroTitle: '8 Precision Browser Tools. <span class="text-[#b8ff2c]">Zero Uploads.</span>',
+    heroTitle: '12 Precision Browser Tools. <span class="text-[#b8ff2c]">Zero Uploads.</span>',
     heroSub: "Engineered for instant speed and total privacy. Everything executes inside your device memory—no accounts, no server queues.",
     tabCompress: "Compress",
     tabDrift: "Drift Test",
@@ -17,6 +17,10 @@ const I18N = {
     tabPalette: "Colors",
     tabQr: "QR & Wi-Fi",
     tabText: "Security",
+    tabKeyboard: "Keyboard",
+    tabPdf: "PDF Studio",
+    tabExif: "EXIF Strip",
+    tabFps: "Monitor Hz",
     compressHeading: "Image Compressor & WebP Converter",
     compressDesc: "Shrink PNG, JPG, or WebP photos up to 90% locally in your browser without losing quality.",
     dropImg: "Drop an image here or click to select",
@@ -42,11 +46,21 @@ const I18N = {
     paletteDesc: "Extract dominant HEX colors from any photo or verify text accessibility contrast ratios (AA / AAA).",
     qrHeading: "Instant QR Code & Wi-Fi Share Generator",
     qrDesc: "Create high-resolution QR codes for links, text, or instant guest Wi-Fi login with 1-click PNG download.",
-    textHeading: "Crypto Password Generator & Word Counter"
+    textHeading: "Crypto Password Generator & Word Counter",
+    kbHeading: "Keyboard Ghosting, NKRO & Switch Chatter Tester",
+    kbDesc: "Press any keys simultaneously to test N-Key Rollover (NKRO), detect mechanical switch double-tap chatter (<35ms), and inspect key codes.",
+    pdfHeading: "PDF Merger & Image-to-PDF Studio",
+    pdfDesc: "Combine multiple PDF files or JPG/PNG images into one PDF document right inside your browser memory—zero uploads.",
+    pdfDrop: "Drop PDFs or Images here, or click to add",
+    exifHeading: "Photo EXIF Metadata Viewer & GPS Privacy Stripper",
+    exifDesc: "Inspect hidden camera, timestamp, and GPS coordinates inside your photos—then strip 100% of tracking metadata before posting online.",
+    exifDrop: "Select a photo to inspect & scrub EXIF",
+    fpsHeading: "Monitor Refresh Rate (Hz) & Frame-Skip Test",
+    fpsDesc: "Verify whether your display is actually running at 60Hz, 120Hz, 144Hz, 165Hz, or 240Hz+ and spot frame drops in real time."
   },
   es: {
     tagline: "Laboratorio de Hardware y Utilidades en Navegador",
-    heroTitle: '8 Herramientas de Precisión. <span class="text-[#b8ff2c]">Sin Subir Archivos.</span>',
+    heroTitle: '12 Herramientas de Precisión. <span class="text-[#b8ff2c]">Sin Subir Archivos.</span>',
     heroSub: "Todo corre directo en la memoria de tu dispositivo—sin registros, sin esperas y 100% privado.",
     tabCompress: "Comprimir",
     tabDrift: "Test Drift",
@@ -56,6 +70,10 @@ const I18N = {
     tabPalette: "Colores",
     tabQr: "QR y Wi-Fi",
     tabText: "Claves",
+    tabKeyboard: "Teclado",
+    tabPdf: "PDF Studio",
+    tabExif: "Quitar EXIF",
+    tabFps: "Monitor Hz",
     compressHeading: "Compresor de Imágenes y Conversor a WebP",
     compressDesc: "Reduce el peso de tus fotos PNG, JPG o WebP hasta un 90% directo en tu navegador sin perder calidad.",
     dropImg: "Arrastra una imagen aquí o toca para elegir",
@@ -81,7 +99,17 @@ const I18N = {
     paletteDesc: "Extrae los 6 colores HEX dominantes de cualquier foto y valida el contraste de diseño AA/AAA.",
     qrHeading: "Generador de Códigos QR y Wi-Fi Instantáneo",
     qrDesc: "Crea códigos QR en alta calidad para enlaces, texto o compartir tu Wi-Fi con descarga en PNG.",
-    textHeading: "Generador de Contraseñas Seguras y Contador de Palabras"
+    textHeading: "Generador de Contraseñas Seguras y Contador de Palabras",
+    kbHeading: "Tester de Teclado: Ghosting, NKRO y Switch Chatter",
+    kbDesc: "Presiona varias teclas a la vez para probar N-Key Rollover (NKRO), detectar doble clic fallido (<35ms) en switches mecánicos y ver key codes.",
+    pdfHeading: "Unir PDF y Convertir Imágenes a PDF",
+    pdfDesc: "Combina varios PDF o fotos JPG/PNG en un solo documento PDF directo en la memoria de tu navegador, sin subir archivos.",
+    pdfDrop: "Arrastra PDFs o Imágenes aquí, o toca para agregar",
+    exifHeading: "Visor EXIF y Eliminador de Ubicación GPS en Fotos",
+    exifDesc: "Revisa la cámara, fecha y coordenadas GPS ocultas en tus fotos, y borra el 100% de los metadatos antes de publicarlas.",
+    exifDrop: "Elige una foto para inspeccionar y limpiar EXIF",
+    fpsHeading: "Test de Frecuencia de Monitor (Hz) y Frame-Skip",
+    fpsDesc: "Comprueba si tu pantalla realmente corre a 60Hz, 120Hz, 144Hz, 165Hz o 240Hz+ y detecta caídas de cuadros en tiempo real."
   }
 };
 
@@ -137,6 +165,9 @@ function switchTool(toolKey) {
   if (qJump) qJump.value = toolKey;
   bumpRunCounter();
   if (toolKey === 'qr') generateQrCode();
+  if (toolKey === 'keyboard') initKeyboardGrid();
+  if (toolKey === 'fps') startFpsLoop();
+  else stopFpsLoop();
 }
 
 // ============================================================================
@@ -785,5 +816,354 @@ function updateWcagContrast() {
       badgeEl.innerText = 'FAIL (<4.5)';
       badgeEl.className = 'px-2.5 py-1 rounded bg-[#ff6b35]/20 text-[#ff6b35] font-bold';
     }
+  }
+}
+
+
+// ============================================================================
+// 9. KEYBOARD GHOSTING, NKRO & SWITCH CHATTER TESTER
+// ============================================================================
+const KB_ROWS = [
+  [['Escape','ESC'],['F1','F1'],['F2','F2'],['F3','F3'],['F4','F4'],['F5','F5'],['F6','F6'],['F7','F7'],['F8','F8'],['F9','F9'],['F10','F10'],['F11','F11'],['F12','F12']],
+  [['Backquote','`'],['Digit1','1'],['Digit2','2'],['Digit3','3'],['Digit4','4'],['Digit5','5'],['Digit6','6'],['Digit7','7'],['Digit8','8'],['Digit9','9'],['Digit0','0'],['Minus','-'],['Equal','='],['Backspace','BKSP',2]],
+  [['Tab','TAB',1.5],['KeyQ','Q'],['KeyW','W'],['KeyE','E'],['KeyR','R'],['KeyT','T'],['KeyY','Y'],['KeyU','U'],['KeyI','I'],['KeyO','O'],['KeyP','P'],['BracketLeft','['],['BracketRight',']'],['Backslash','\\',1.5]],
+  [['CapsLock','CAPS',1.8],['KeyA','A'],['KeyS','S'],['KeyD','D'],['KeyF','F'],['KeyG','G'],['KeyH','H'],['KeyJ','J'],['KeyK','K'],['KeyL','L'],['Semicolon',';'],['Quote',"'"],['Enter','ENTER',2.2]],
+  [['ShiftLeft','SHIFT',2.3],['KeyZ','Z'],['KeyX','X'],['KeyC','C'],['KeyV','V'],['KeyB','B'],['KeyN','N'],['KeyM','M'],['Comma',','],['Period','.'],['Slash','/'],['ShiftRight','SHIFT',2.7]],
+  [['ControlLeft','CTRL',1.4],['MetaLeft','WIN/CMD',1.3],['AltLeft','ALT',1.3],['Space','SPACE',5.5],['AltRight','ALT',1.3],['ControlRight','CTRL',1.4],['ArrowLeft','←'],['ArrowUp','↑'],['ArrowDown','↓'],['ArrowRight','→']]
+];
+
+let kbActive = new Set();
+let kbMaxNkro = 0;
+let kbChatterCount = 0;
+const kbLastPressTime = {};
+let kbInitialized = false;
+
+function initKeyboardGrid() {
+  const grid = document.getElementById('kb-visual-grid');
+  if (!grid || kbInitialized) return;
+  kbInitialized = true;
+
+  grid.innerHTML = KB_ROWS.map(row => `
+    <div class="flex gap-1.5 mb-1.5 min-w-[640px]">
+      ${row.map(([code, label, span = 1]) => `
+        <div id="kb-key-${code}" style="flex:${span}" class="h-9 rounded-lg bg-[#0b0f17] border border-white/10 flex items-center justify-center text-[10px] font-mono-tech font-bold text-slate-300 transition-colors px-1">
+          ${label}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  window.addEventListener('keydown', (e) => {
+    const pane = document.getElementById('pane-keyboard');
+    if (!pane || pane.classList.contains('hidden')) return;
+    if (['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab'].includes(e.code)) {
+      e.preventDefault();
+    }
+    if (!e.repeat) {
+      const now = performance.now();
+      const prev = kbLastPressTime[e.code] || 0;
+      if (prev && (now - prev) < 35) {
+        kbChatterCount++;
+        const chEl = document.getElementById('kb-chatter-count');
+        const logEl = document.getElementById('kb-chatter-log');
+        if (chEl) { chEl.innerText = kbChatterCount; chEl.className = 'text-xl font-extrabold text-[#ff6b35]'; }
+        if (logEl) logEl.innerText = `Chatter detected on ${e.code} (${(now - prev).toFixed(1)}ms between presses)`;
+      }
+      kbLastPressTime[e.code] = now;
+    }
+
+    kbActive.add(e.code);
+    if (kbActive.size > kbMaxNkro) kbMaxNkro = kbActive.size;
+
+    const keyEl = document.getElementById(`kb-key-${e.code}`);
+    if (keyEl) {
+      keyEl.classList.remove('bg-[#0b0f17]', 'text-slate-300', 'border-white/10');
+      keyEl.classList.add('bg-[#b8ff2c]', 'text-[#05070b]', 'border-[#b8ff2c]');
+    }
+    updateKbTelemetry(e.code);
+  });
+
+  window.addEventListener('keyup', (e) => {
+    kbActive.delete(e.code);
+    const keyEl = document.getElementById(`kb-key-${e.code}`);
+    if (keyEl) {
+      keyEl.classList.remove('bg-[#b8ff2c]', 'text-[#05070b]');
+      keyEl.classList.add('bg-cyan-400/20', 'text-cyan-300', 'border-cyan-400/40');
+    }
+    updateKbTelemetry(e.code);
+  });
+}
+
+function updateKbTelemetry(lastCode) {
+  const actEl = document.getElementById('kb-active-count');
+  const maxEl = document.getElementById('kb-max-nkro');
+  const codeEl = document.getElementById('kb-last-code');
+  if (actEl) actEl.innerText = kbActive.size;
+  if (maxEl) maxEl.innerText = kbMaxNkro;
+  if (codeEl && lastCode) codeEl.innerText = lastCode;
+}
+
+function resetKeyboardTest() {
+  kbActive.clear();
+  kbMaxNkro = 0;
+  kbChatterCount = 0;
+  document.querySelectorAll('[id^="kb-key-"]').forEach(el => {
+    el.className = 'h-9 rounded-lg bg-[#0b0f17] border border-white/10 flex items-center justify-center text-[10px] font-mono-tech font-bold text-slate-300 transition-colors px-1';
+  });
+  const chEl = document.getElementById('kb-chatter-count');
+  if (chEl) { chEl.innerText = '0'; chEl.className = 'text-xl font-extrabold text-slate-300'; }
+  updateKbTelemetry('--');
+}
+
+// ============================================================================
+// 10. PDF MERGER & IMAGE-TO-PDF STUDIO
+// ============================================================================
+let pdfQueue = [];
+
+function handlePdfFiles(fileList) {
+  if (!fileList || !fileList.length) return;
+  for (const f of fileList) {
+    if (f.type === 'application/pdf' || f.type === 'image/jpeg' || f.type === 'image/png') {
+      pdfQueue.push(f);
+    }
+  }
+  renderPdfQueue();
+  bumpRunCounter();
+}
+
+function removePdfItem(index) {
+  pdfQueue.splice(index, 1);
+  renderPdfQueue();
+}
+
+function clearPdfQueue() {
+  pdfQueue = [];
+  const inp = document.getElementById('pdf-file-input');
+  if (inp) inp.value = '';
+  renderPdfQueue();
+}
+
+function renderPdfQueue() {
+  const list = document.getElementById('pdf-queue-list');
+  const count = document.getElementById('pdf-queue-count');
+  const btn = document.getElementById('pdf-merge-btn');
+  if (count) count.innerText = `${pdfQueue.length} file${pdfQueue.length === 1 ? '' : 's'}`;
+  if (btn) btn.disabled = pdfQueue.length === 0;
+  if (!list) return;
+
+  if (!pdfQueue.length) {
+    list.innerHTML = 'Add PDF documents or JPG/PNG photos to merge them in order.';
+    return;
+  }
+
+  list.innerHTML = pdfQueue.map((f, i) => `
+    <div class="flex items-center justify-between gap-2 bg-[#0b0f17] border border-white/10 rounded-lg px-3 py-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <i class="fa-solid ${f.type === 'application/pdf' ? 'fa-file-pdf text-[#ff6b35]' : 'fa-image text-cyan-400'}"></i>
+        <span class="text-slate-200 truncate">${f.name}</span>
+        <span class="text-[10px] font-mono-tech text-slate-500 shrink-0">${formatBytes(f.size)}</span>
+      </div>
+      <button onclick="removePdfItem(${i})" class="text-slate-500 hover:text-[#ff6b35] px-1.5" aria-label="Remove file">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  `).join('');
+}
+
+async function mergeAndDownloadPdf() {
+  if (!pdfQueue.length || typeof PDFLib === 'undefined') return;
+  const statusEl = document.getElementById('pdf-status');
+  const btn = document.getElementById('pdf-merge-btn');
+  if (btn) btn.disabled = true;
+  if (statusEl) statusEl.innerText = 'Building merged PDF in local RAM...';
+
+  try {
+    const mergedPdf = await PDFLib.PDFDocument.create();
+    for (const file of pdfQueue) {
+      const bytes = await file.arrayBuffer();
+      if (file.type === 'application/pdf') {
+        const src = await PDFLib.PDFDocument.load(bytes);
+        const pages = await mergedPdf.copyPages(src, src.getPageIndices());
+        pages.forEach(p => mergedPdf.addPage(p));
+      } else {
+        const img = file.type === 'image/png'
+          ? await mergedPdf.embedPng(bytes)
+          : await mergedPdf.embedJpg(bytes);
+        const page = mergedPdf.addPage([img.width, img.height]);
+        page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+      }
+    }
+    const outBytes = await mergedPdf.save();
+    const blob = new Blob([outBytes], { type: 'application/pdf' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `pulsekit-merged-${Date.now()}.pdf`;
+    a.click();
+    if (statusEl) statusEl.innerText = `Done! Merged ${pdfQueue.length} file(s) (${formatBytes(blob.size)}) locally.`;
+    bumpRunCounter();
+  } catch (err) {
+    if (statusEl) statusEl.innerText = `Error: ${err.message}`;
+  } finally {
+    if (btn) btn.disabled = pdfQueue.length === 0;
+  }
+}
+
+// ============================================================================
+// 11. PHOTO EXIF VIEWER & GPS PRIVACY STRIPPER
+// ============================================================================
+let exifSourceImg = null;
+let exifSourceName = 'clean-photo';
+
+async function inspectAndPrepExif(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  exifSourceName = file.name.replace(/\.[^.]+$/, '');
+
+  const table = document.getElementById('exif-table');
+  const badge = document.getElementById('exif-gps-badge');
+  const btn = document.getElementById('exif-strip-btn');
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      exifSourceImg = img;
+      if (btn) btn.disabled = false;
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+
+  try {
+    const data = (typeof exifr !== 'undefined') ? await exifr.parse(file) : null;
+    if (!data || Object.keys(data).length === 0) {
+      if (badge) { badge.innerText = 'CLEAN (NO EXIF)'; badge.className = 'text-[10px] font-mono-tech px-2 py-0.5 rounded bg-[#b8ff2c]/15 text-[#b8ff2c]'; }
+      if (table) table.innerHTML = '<div class="text-slate-300">No EXIF tracking metadata found in this image.</div>';
+    } else {
+      const hasGps = (data.latitude !== undefined && data.longitude !== undefined);
+      if (badge) {
+        badge.innerText = hasGps ? 'GPS FOUND!' : 'EXIF PRESENT';
+        badge.className = hasGps
+          ? 'text-[10px] font-mono-tech px-2 py-0.5 rounded bg-[#ff6b35]/20 text-[#ff6b35] font-bold'
+          : 'text-[10px] font-mono-tech px-2 py-0.5 rounded bg-amber-400/20 text-amber-300';
+      }
+      const rows = [
+        ['Camera', `${data.Make || ''} ${data.Model || ''}`.trim() || 'Unknown'],
+        ['Lens', data.LensModel || 'Unknown'],
+        ['Date Taken', data.DateTimeOriginal ? String(data.DateTimeOriginal) : 'Unknown'],
+        ['GPS Coords', hasGps ? `${data.latitude.toFixed(5)}, ${data.longitude.toFixed(5)}` : 'None'],
+        ['ISO / Aperture', `${data.ISO || '--'} / f${data.FNumber || '--'}`],
+        ['Software', data.Software || 'Unknown']
+      ];
+      if (table) {
+        table.innerHTML = rows.map(([k, v]) => `
+          <div class="bg-[#0b0f17] border border-white/10 rounded-lg p-2.5">
+            <div class="text-[10px] text-slate-500">${k}</div>
+            <div class="text-slate-200 truncate">${v}</div>
+          </div>
+        `).join('');
+      }
+    }
+    bumpRunCounter();
+  } catch {
+    if (table) table.innerHTML = '<div>Could not parse EXIF headers, but you can still strip and re-save cleanly.</div>';
+  }
+}
+
+function downloadStrippedPhoto() {
+  if (!exifSourceImg) return;
+  const canvas = document.createElement('canvas');
+  canvas.width = exifSourceImg.width;
+  canvas.height = exifSourceImg.height;
+  canvas.getContext('2d').drawImage(exifSourceImg, 0, 0);
+  canvas.toBlob((blob) => {
+    if (!blob) return;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${exifSourceName}-clean-no-exif.jpg`;
+    a.click();
+    bumpRunCounter();
+  }, 'image/jpeg', 0.95);
+}
+
+// ============================================================================
+// 12. MONITOR REFRESH RATE (HZ) & FRAME-SKIP TEST
+// ============================================================================
+let fpsRafId = null;
+let fpsLastTime = 0;
+let fpsFrames = 0;
+let fpsAccTime = 0;
+let fpsDrops = 0;
+let fpsPosX = 0;
+let fpsPos30X = 0;
+let fps30Acc = 0;
+
+function startFpsLoop() {
+  if (fpsRafId) return;
+  fpsLastTime = performance.now();
+  fpsFrames = 0;
+  fpsAccTime = 0;
+  fpsDrops = 0;
+
+  const loop = (now) => {
+    const dt = now - fpsLastTime;
+    fpsLastTime = now;
+    fpsFrames++;
+    fpsAccTime += dt;
+
+    if (fpsAccTime >= 500) {
+      const hz = Math.round((fpsFrames * 1000) / fpsAccTime);
+      const ms = (fpsAccTime / fpsFrames).toFixed(2);
+      const hzEl = document.getElementById('fps-hz-val');
+      const msEl = document.getElementById('fps-ms-val');
+      const dropEl = document.getElementById('fps-drop-val');
+      if (hzEl) hzEl.innerText = `${hz} Hz`;
+      if (msEl) msEl.innerText = `${ms} ms`;
+      if (dt > 40 && fpsFrames > 5) fpsDrops++;
+      if (dropEl) dropEl.innerText = fpsDrops;
+      fpsFrames = 0;
+      fpsAccTime = 0;
+    }
+
+    const canvas = document.getElementById('fps-motion-canvas');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.fillStyle = '#05070b';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
+
+      fpsPosX = (fpsPosX + dt * 0.45) % (w + 60);
+      fps30Acc += dt;
+      if (fps30Acc >= 33.33) {
+        fpsPos30X = (fpsPos30X + fps30Acc * 0.45) % (w + 60);
+        fps30Acc = 0;
+      }
+
+      // Top Track: Native Hz
+      ctx.fillStyle = '#b8ff2c';
+      ctx.fillRect(fpsPosX - 60, 26, 54, 34);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '11px monospace';
+      ctx.fillText('NATIVE HZ', 12, 20);
+
+      // Bottom Track: 30 FPS Reference
+      ctx.fillStyle = '#22d3ee';
+      ctx.fillRect(fpsPos30X - 60, h / 2 + 26, 54, 34);
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('30 FPS REFERENCE', 12, h / 2 + 20);
+    }
+
+    fpsRafId = requestAnimationFrame(loop);
+  };
+  fpsRafId = requestAnimationFrame(loop);
+}
+
+function stopFpsLoop() {
+  if (fpsRafId) {
+    cancelAnimationFrame(fpsRafId);
+    fpsRafId = null;
   }
 }
