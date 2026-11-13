@@ -1,0 +1,12 @@
+# PulseKit Tools // Free 100% Private Browser Utility & Hardware Lab
+
+> PulseKit is an all-in-one, zero-upload browser utility suite built for English (US/Global) and Spanish (Mexico/Latam) users. Every tool runs 100% locally in the browser using HTML5 Canvas, Gamepad API, Web Audio API, and Web Crypto API.
+
+## Direct Tool Endpoints
+- [PulseKit Main Hub](https://pulsekit-tools.vercel.app/): All 6 browser utilities in one fast workspace.
+- [Image Compressor & WebP Converter](https://pulsekit-tools.vercel.app/image-compressor-webp-converter): Shrink PNG/JPG/WebP images locally with quality & width controls.
+- [PS5 / PS4 / Xbox Controller Drift Tester](https://pulsekit-tools.vercel.app/controller-drift-tester-ps5-xbox): Real-time 60Hz stick drift radar, L2/R2 trigger meter, 16-button grid, and vibration tester.
+- [Mouse Polling Rate (Hz), CPS & Reaction Time Test](https://pulsekit-tools.vercel.app/mouse-polling-rate-cps-reaction-test): Measure USB mouse Hz (125Hz–1000Hz+), 5-second click speed, and human reflex in milliseconds.
+- [Microphone Visualizer & Dead Pixel Screen Test](https://pulsekit-tools.vercel.app/mic-dead-pixel-screen-test): Live mic frequency analyzer and fullscreen solid-color dead pixel display check.
+- [Instant QR Code & Wi-Fi QR Generator](https://pulsekit-tools.vercel.app/qr-code-wifi-generator): Generate downloadable PNG QR codes for URLs, text, or guest Wi-Fi access.
+- [Herramientas Web Gratis en Español](https://pulsekit-tools.vercel.app/herramientas-web-gratis-espanol): Versión completa en español para México y Latinoamérica.

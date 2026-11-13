@@ -1,0 +1,16 @@
+{
+  "name": "PulseKit // All-in-One Browser Utility & Hardware Lab",
+  "short_name": "PulseKit",
+  "description": "Free 100% private browser tools: Image Compressor, PS5/Xbox Drift Tester, Mouse Hz & Reaction Test, Mic/Dead Pixel Check & QR Generator.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070b14",
+  "theme_color": "#38bdf8",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
