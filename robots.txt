@@ -27,3 +27,4 @@ Allow: /
 
 Sitemap: https://pulsekit-tools.vercel.app/sitemap.xml
 # AI Discovery: https://pulsekit-tools.vercel.app/llms.txt
+

@@ -6,15 +6,17 @@
 
 const I18N = {
   en: {
-    tagline: "All-in-One Browser Utility & Hardware Lab — Zero Uploads",
-    heroTitle: '6 Essential Browser Tools. <span class="text-sky-400">Instant &amp; 100% Private.</span>',
-    heroSub: "Everything runs locally on your device—no sign-ups, no file uploads, no waiting. Pick a tool below to start.",
-    tabCompress: "Image Compress",
-    tabDrift: "Drift Tester",
-    tabMouse: "Mouse Hz & CPS",
-    tabHardware: "Mic & Screen",
+    tagline: "Precision Hardware & Browser Utility Lab",
+    heroTitle: '8 Precision Browser Tools. <span class="text-[#b8ff2c]">Zero Uploads.</span>',
+    heroSub: "Engineered for instant speed and total privacy. Everything executes inside your device memory—no accounts, no server queues.",
+    tabCompress: "Compress",
+    tabDrift: "Drift Test",
+    tabMouse: "Mouse Hz",
+    tabHardware: "Mic & Pixels",
+    tabAudio: "Speakers",
+    tabPalette: "Colors",
     tabQr: "QR & Wi-Fi",
-    tabText: "Pass & Words",
+    tabText: "Security",
     compressHeading: "Image Compressor & WebP Converter",
     compressDesc: "Shrink PNG, JPG, or WebP photos up to 90% locally in your browser without losing quality.",
     dropImg: "Drop an image here or click to select",
@@ -30,24 +32,30 @@ const I18N = {
     mouseHeading: "Mouse Polling Rate (Hz), CPS & Reaction Time Test",
     mouseDesc: "Test your gaming mouse hardware polling frequency, click speed, and human reflex in milliseconds.",
     hzSub: "Move your mouse fast in circles inside the pad below.",
-    cpsSub: "Click/tap as fast as you can for 5 seconds.",
-    reactSub: "Wait for green, then click/tap immediately!",
+    cpsSub: "Click or tap as fast as you can for 5 seconds.",
+    reactSub: "Wait for green, then click or tap immediately.",
     hwHeading: "Microphone Visualizer & Dead Pixel Screen Test",
     hwDesc: "Verify your headset microphone waveform locally and inspect monitors/phones for stuck or dead pixels.",
+    audioHeading: "Headphone & Speaker Stereo L/R + Bass Tester",
+    audioDesc: "Check Left/Right audio channel balance, test sub-bass response (30Hz–1000Hz), and eject water/dust vibrations.",
+    paletteHeading: "Image Color Palette Extractor & WCAG Contrast",
+    paletteDesc: "Extract dominant HEX colors from any photo or verify text accessibility contrast ratios (AA / AAA).",
     qrHeading: "Instant QR Code & Wi-Fi Share Generator",
     qrDesc: "Create high-resolution QR codes for links, text, or instant guest Wi-Fi login with 1-click PNG download.",
     textHeading: "Crypto Password Generator & Word Counter"
   },
   es: {
-    tagline: "Laboratorio de Herramientas en tu Navegador — 100% Privado",
-    heroTitle: '6 Herramientas Esenciales en tu Navegador. <span class="text-sky-400">Gratis y Sin Subir Archivos.</span>',
-    heroSub: "Todo funciona directo en tu dispositivo—sin registros, sin esperas y 100% privado. Elige una herramienta:",
-    tabCompress: "Comprimir Fotos",
-    tabDrift: "Test de Drift",
-    tabMouse: "Mouse Hz y CPS",
-    tabHardware: "Mic y Pantalla",
+    tagline: "Laboratorio de Hardware y Utilidades en Navegador",
+    heroTitle: '8 Herramientas de Precisión. <span class="text-[#b8ff2c]">Sin Subir Archivos.</span>',
+    heroSub: "Todo corre directo en la memoria de tu dispositivo—sin registros, sin esperas y 100% privado.",
+    tabCompress: "Comprimir",
+    tabDrift: "Test Drift",
+    tabMouse: "Mouse Hz",
+    tabHardware: "Mic/Píxeles",
+    tabAudio: "Audio L/R",
+    tabPalette: "Colores",
     tabQr: "QR y Wi-Fi",
-    tabText: "Claves y Texto",
+    tabText: "Claves",
     compressHeading: "Compresor de Imágenes y Conversor a WebP",
     compressDesc: "Reduce el peso de tus fotos PNG, JPG o WebP hasta un 90% directo en tu navegador sin perder calidad.",
     dropImg: "Arrastra una imagen aquí o toca para elegir",
@@ -63,15 +71,26 @@ const I18N = {
     mouseHeading: "Test de Polling Rate (Hz), CPS y Tiempo de Reacción",
     mouseDesc: "Mide los Hz reales de tu mouse gamer, velocidad de clics por segundo y reflejos en milisegundos.",
     hzSub: "Mueve el mouse rápido en círculos dentro del recuadro.",
-    cpsSub: "Haz clic/toca lo más rápido que puedas durante 5 segundos.",
+    cpsSub: "Haz clic o toca lo más rápido posible durante 5 segundos.",
     reactSub: "Espera a que se ponga verde y haz clic al instante.",
     hwHeading: "Prueba de Micrófono y Píxeles Muertos en Pantalla",
     hwDesc: "Comprueba la onda de audio de tu micrófono y revisa monitores o celulares por píxeles muertos.",
+    audioHeading: "Prueba de Bocinas y Audífonos Estéreo L/R + Bajos",
+    audioDesc: "Verifica el canal izquierdo/derecho, prueba bajos (30Hz–1000Hz) y genera vibración para limpiar bocinas.",
+    paletteHeading: "Extractor de Paleta de Colores y Contraste WCAG",
+    paletteDesc: "Extrae los 6 colores HEX dominantes de cualquier foto y valida el contraste de diseño AA/AAA.",
     qrHeading: "Generador de Códigos QR y Wi-Fi Instantáneo",
     qrDesc: "Crea códigos QR en alta calidad para enlaces, texto o compartir tu Wi-Fi con descarga en PNG.",
     textHeading: "Generador de Contraseñas Seguras y Contador de Palabras"
   }
 };
+
+let sessionRunCount = 1;
+function bumpRunCounter() {
+  sessionRunCount++;
+  const el = document.getElementById('session-runs-counter');
+  if (el) el.innerText = String(sessionRunCount).padStart(3, '0');
+}
 
 window.addEventListener('DOMContentLoaded', () => {
   initImageDropzone();
@@ -96,11 +115,11 @@ function setLanguage(lang) {
   const btnEs = document.getElementById('lang-es');
   if (btnEn && btnEs) {
     if (lang === 'es') {
-      btnEs.className = "px-2.5 py-1.5 rounded-lg text-xs font-bold bg-sky-400 text-slate-950 transition";
-      btnEn.className = "px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 border border-slate-700 hover:text-white transition";
+      btnEs.className = "px-2.5 py-1 rounded-lg bg-[#b8ff2c] text-[#05070b] transition";
+      btnEn.className = "px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition";
     } else {
-      btnEn.className = "px-2.5 py-1.5 rounded-lg text-xs font-bold bg-sky-400 text-slate-950 transition";
-      btnEs.className = "px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-slate-300 border border-slate-700 hover:text-white transition";
+      btnEn.className = "px-2.5 py-1 rounded-lg bg-[#b8ff2c] text-[#05070b] transition";
+      btnEs.className = "px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition";
     }
   }
 }
@@ -108,12 +127,15 @@ function setLanguage(lang) {
 function switchTool(toolKey) {
   document.querySelectorAll('.tool-pane').forEach((p) => p.classList.add('hidden'));
   document.querySelectorAll('[id^="btn-tool-"]').forEach((b) => {
-    b.classList.remove('tool-tab-active');
+    b.classList.remove('dock-btn-active');
   });
   const pane = document.getElementById(`pane-${toolKey}`);
   const btn = document.getElementById(`btn-tool-${toolKey}`);
+  const qJump = document.getElementById('quick-jump-select');
   if (pane) pane.classList.remove('hidden');
-  if (btn) btn.classList.add('tool-tab-active');
+  if (btn) btn.classList.add('dock-btn-active');
+  if (qJump) qJump.value = toolKey;
+  bumpRunCounter();
   if (toolKey === 'qr') generateQrCode();
 }
 
@@ -510,11 +532,11 @@ function setQrMode(mode) {
   document.getElementById('qr-url-fields').classList.toggle('hidden', mode !== 'url');
   document.getElementById('qr-wifi-fields').classList.toggle('hidden', mode !== 'wifi');
   document.getElementById('qr-mode-url').className = mode === 'url'
-    ? 'px-3.5 py-2 rounded-lg bg-amber-400 text-slate-950 font-bold'
-    : 'px-3.5 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 font-bold';
+    ? 'px-3.5 py-2 rounded-lg bg-[#b8ff2c] text-[#05070b] font-bold'
+    : 'px-3.5 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300 font-bold';
   document.getElementById('qr-mode-wifi').className = mode === 'wifi'
-    ? 'px-3.5 py-2 rounded-lg bg-amber-400 text-slate-950 font-bold'
-    : 'px-3.5 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 font-bold';
+    ? 'px-3.5 py-2 rounded-lg bg-[#b8ff2c] text-[#05070b] font-bold'
+    : 'px-3.5 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300 font-bold';
   generateQrCode();
 }
 
@@ -590,4 +612,178 @@ function updateWordCounter() {
   document.getElementById('wc-words').innerText = words;
   document.getElementById('wc-chars').innerText = chars;
   document.getElementById('wc-read').innerText = readSec < 60 ? `${readSec}s` : `${Math.ceil(readSec / 60)}m`;
+}
+
+
+
+// ============================================================================
+// 7. SPEAKER L/R STEREO & SUB-BASS FREQUENCY TESTER
+// ============================================================================
+let toneCtx = null;
+let toneOsc = null;
+let toneRunning = false;
+
+function playStereoChannel(panVal) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(panVal === -1 ? 440 : panVal === 1 ? 523.25 : 480, ctx.currentTime);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.75);
+
+    if (panner) {
+      panner.pan.setValueAtTime(panVal, ctx.currentTime);
+      osc.connect(panner);
+      panner.connect(gain);
+    } else {
+      osc.connect(gain);
+    }
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.78);
+
+    const label = panVal === -1 ? 'LEFT CHANNEL ACTIVE' : panVal === 1 ? 'RIGHT CHANNEL ACTIVE' : 'CENTER STEREO ACTIVE';
+    const st = document.getElementById('stereo-status');
+    if (st) st.innerText = `Playing test tone -> ${label}`;
+    bumpRunCounter();
+  } catch (e) {}
+}
+
+function updateToneFreq() {
+  const slider = document.getElementById('tone-hz-slider');
+  const valEl = document.getElementById('tone-hz-val');
+  if (!slider || !valEl) return;
+  const hz = parseInt(slider.value, 10) || 165;
+  valEl.innerText = `${hz} Hz`;
+  if (toneOsc && toneCtx) {
+    toneOsc.frequency.setValueAtTime(hz, toneCtx.currentTime);
+  }
+}
+
+function setTonePreset(hz) {
+  const slider = document.getElementById('tone-hz-slider');
+  if (slider) slider.value = hz;
+  updateToneFreq();
+  if (!toneRunning) toggleToneGenerator();
+}
+
+function toggleToneGenerator() {
+  const btn = document.getElementById('btn-tone-toggle');
+  if (!toneRunning) {
+    try {
+      toneCtx = new (window.AudioContext || window.webkitAudioContext)();
+      toneOsc = toneCtx.createOscillator();
+      const gain = toneCtx.createGain();
+      const hz = parseInt(document.getElementById('tone-hz-slider')?.value || '165', 10);
+      toneOsc.type = 'sine';
+      toneOsc.frequency.setValueAtTime(hz, toneCtx.currentTime);
+      gain.gain.setValueAtTime(0.15, toneCtx.currentTime);
+      toneOsc.connect(gain);
+      gain.connect(toneCtx.destination);
+      toneOsc.start();
+      toneRunning = true;
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-stop mr-1.5"></i> Stop Tone';
+      bumpRunCounter();
+    } catch (e) {}
+  } else {
+    try {
+      if (toneOsc) toneOsc.stop();
+      if (toneCtx) toneCtx.close();
+    } catch (e) {}
+    toneRunning = false;
+    toneOsc = null;
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-play mr-1.5"></i> Play Frequency Tone';
+  }
+}
+
+// ============================================================================
+// 8. IMAGE COLOR PALETTE EXTRACTOR & WCAG CONTRAST CHECKER
+// ============================================================================
+function extractImagePalette(file) {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const w = 48, h = 48;
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      const data = ctx.getImageData(0, 0, w, h).data;
+
+      const buckets = new Map();
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i + 3] < 128) continue;
+        // Quantize to 24-step buckets to find distinct dominant colors
+        const r = Math.min(255, Math.round(data[i] / 24) * 24);
+        const g = Math.min(255, Math.round(data[i + 1] / 24) * 24);
+        const b = Math.min(255, Math.round(data[i + 2] / 24) * 24);
+        const hex = '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+        buckets.set(hex, (buckets.get(hex) || 0) + 1);
+      }
+
+      const topColors = Array.from(buckets.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 6)
+        .map(entry => entry[0]);
+
+      const box = document.getElementById('palette-swatches');
+      if (box) {
+        box.innerHTML = topColors.map(hex => `
+          <button type="button" onclick="navigator.clipboard?.writeText('${hex}')" class="p-2 rounded-lg bg-[#05070b] border border-white/10 hover:border-[#b8ff2c] text-center transition" title="Copy ${hex}">
+            <div class="w-full h-10 rounded mb-1.5 border border-white/10" style="background:${hex}"></div>
+            <div class="text-[10px] font-mono-tech font-bold text-slate-200">${hex}</div>
+          </button>
+        `).join('');
+      }
+      bumpRunCounter();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function hexLuminance(hex) {
+  const rgb = [1, 3, 5].map(idx => {
+    const c = parseInt(hex.slice(idx, idx + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+}
+
+function updateWcagContrast() {
+  const fg = document.getElementById('wcag-fg')?.value || '#b8ff2c';
+  const bg = document.getElementById('wcag-bg')?.value || '#05070b';
+  const preview = document.getElementById('wcag-preview');
+  const ratioEl = document.getElementById('wcag-ratio');
+  const badgeEl = document.getElementById('wcag-badge');
+
+  if (preview) {
+    preview.style.color = fg;
+    preview.style.backgroundColor = bg;
+  }
+
+  const l1 = hexLuminance(fg);
+  const l2 = hexLuminance(bg);
+  const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+
+  if (ratioEl) ratioEl.innerText = `${ratio.toFixed(2)}:1`;
+  if (badgeEl) {
+    if (ratio >= 7) {
+      badgeEl.innerText = 'AAA PASS';
+      badgeEl.className = 'px-2.5 py-1 rounded bg-[#b8ff2c]/15 text-[#b8ff2c] font-bold';
+    } else if (ratio >= 4.5) {
+      badgeEl.innerText = 'AA PASS';
+      badgeEl.className = 'px-2.5 py-1 rounded bg-cyan-400/15 text-cyan-300 font-bold';
+    } else {
+      badgeEl.innerText = 'FAIL (<4.5)';
+      badgeEl.className = 'px-2.5 py-1 rounded bg-[#ff6b35]/20 text-[#ff6b35] font-bold';
+    }
+  }
 }

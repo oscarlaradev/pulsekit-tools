@@ -10,3 +10,4 @@
 - [Microphone Visualizer & Dead Pixel Screen Test](https://pulsekit-tools.vercel.app/mic-dead-pixel-screen-test): Live mic frequency analyzer and fullscreen solid-color dead pixel display check.
 - [Instant QR Code & Wi-Fi QR Generator](https://pulsekit-tools.vercel.app/qr-code-wifi-generator): Generate downloadable PNG QR codes for URLs, text, or guest Wi-Fi access.
 - [Herramientas Web Gratis en Español](https://pulsekit-tools.vercel.app/herramientas-web-gratis-espanol): Versión completa en español para México y Latinoamérica.
+
