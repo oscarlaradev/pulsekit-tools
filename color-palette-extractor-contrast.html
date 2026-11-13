@@ -135,8 +135,8 @@
       <!-- Center Quick-Jump Command Bar (Desktop & Tablet) -->
       <div class="hidden md:flex items-center flex-1 max-w-md mx-4">
         <div class="relative w-full">
-          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-          <select id="quick-jump-select" onchange="if(this.value) switchTool(this.value)" aria-label="Quick jump to tool" class="w-full bg-[#0b0f17] border border-white/10 hover:border-white/25 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-200 focus:border-[#b8ff2c] outline-none cursor-pointer transition">
+          <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+          <select id="quick-jump-select" onchange="if(this.value) switchTool(this.value)" aria-label="Quick jump to tool" class="w-full appearance-none bg-[#0b0f17] border border-white/10 hover:border-white/25 rounded-xl pl-10 pr-9 py-2 text-xs text-slate-200 focus:border-[#b8ff2c] outline-none cursor-pointer transition">
             <option value="compress">Image Compressor &amp; WebP Converter</option>
             <option value="drift">PS5 / PS4 / Xbox Stick Drift Tester</option>
             <option value="mouse">Mouse Polling Rate (Hz), CPS &amp; Reflex</option>
@@ -146,6 +146,7 @@
             <option value="qr">Instant URL &amp; Wi-Fi QR Generator</option>
             <option value="text">Crypto Password &amp; Word Counter</option>
           </select>
+          <i class="fa-solid fa-chevron-down pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-[10px]"></i>
         </div>
       </div>
 
